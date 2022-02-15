@@ -3,7 +3,7 @@ from setuptools import setup, Extension
 fast_ulid__title__ = "fast-ulid"
 fast_ulid__description__ = "Easy to use ULID generator"
 fast_ulid__url__ = "https://github.com/nagataaaas/fast-ulid"
-fast_ulid__version_info__ = ("0", "1", "0")
+fast_ulid__version_info__ = ("0", "1", "1")
 fast_ulid__version__ = ".".join(fast_ulid__version_info__)
 fast_ulid__author__ = "Yamato Nagata"
 fast_ulid__author_email__ = "chickenwingswillfly@gmail.com"
@@ -31,6 +31,10 @@ setup(name=fast_ulid__title__,
           "Programming Language :: Python",
           "Topic :: Software Development :: Libraries :: Python Modules"
       ],
+      packages=["fast_ulid"],
+      package_data={
+          'fast_ulid': ["py.typed", "*.pyi"]
+      },
       ext_modules=[
           Extension('fast_ulid', ['./fast_ulid/ULID.cpp'], language='c++'),
       ])
