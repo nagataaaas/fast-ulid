@@ -85,17 +85,17 @@ We don't need a convenient class to handle ULIDs, right?
 This is why we focused on the performance of fast-ulid.
 
 # Documentation
-## `fast-ulid.ulid(timestamp=None) -> str`
+## `fast_ulid.ulid(timestamp: float | datetime.datetime =None) -> str`
 - timestamp: `float` or `datetime.datetime`.
 
 Create a new ULID with the given timestamp. if not given, the current timestamp is used.
 
-## `fast-ulid.decode_timestamp(ulid) -> float`
+## `fast_ulid.decode_timestamp(ulid: str) -> float`
 - ulid: `str`
 
 Parse the timestamp from the given ULID.
 
-## `fast-ulid.decode_datetime(ulid) -> datetime.datetime`
+## `fast_ulid.decode_datetime(ulid: str) -> datetime.datetime`
 - ulid: `str`
 
 Parse the `datetime.datetime` from the given ULID.
