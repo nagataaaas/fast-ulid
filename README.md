@@ -58,6 +58,8 @@ There are some other ULID implementations, but they are not as fast as fast-ulid
 I have benchmarked some functions that seem to be used frequently.\
 And here is the result.
 
+Each Time is the average time of the 1000000 function calls.
+
 ![Benchmark](assets/bench_result.png "benchmark")
 
 Tested other packages are below.
