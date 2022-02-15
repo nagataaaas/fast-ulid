@@ -73,7 +73,7 @@ Therefore, I excluded it from the benchmark.
 # Why fast-ulid?
 
 Because it's fast! Other Python ULID implementations are written in Python, so they are (relatively) slow.\
-fast-ulid is written in C, so it's fast.
+fast-ulid is written in C++, so it's fast.
 
 > however, those implementations are highly tuned for performance.\
 > Considering that they were written in Python, they are surprisingly fast!
