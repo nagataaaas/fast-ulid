@@ -48,20 +48,20 @@ class TestFastULID(unittest.TestCase):
 
         self.assertEqual(parse_ulid(ulid), now)
         self.assertEqual(fast_ulid.decode_datetime(ulid), now)
-        self.assertEqual(fast_ulid.decode_time(ulid), now.timestamp())
-        self.assertEqual(fast_ulid.decode_time('7ZZZZZZZZZZZZZZZZZZZZZZZZZ'), 281474976710.655)
+        self.assertEqual(fast_ulid.decode_timestamp(ulid), now.timestamp())
+        self.assertEqual(fast_ulid.decode_timestamp('7ZZZZZZZZZZZZZZZZZZZZZZZZZ'), 281474976710.655)
 
     def test_parse_Error(self):
         ulid = fast_ulid.ulid()
-        self.assertRaises(ValueError, fast_ulid.decode_time, 'a' + ulid[1:])  # invalid character
-        self.assertRaises(ValueError, fast_ulid.decode_time, ulid[:-2])  # invalid length
-        self.assertRaises(ValueError, fast_ulid.decode_time, ulid[:-2])  # invalid length
+        self.assertRaises(ValueError, fast_ulid.decode_timestamp, 'a' + ulid[1:])  # invalid character
+        self.assertRaises(ValueError, fast_ulid.decode_timestamp, ulid[:-2])  # invalid length
+        self.assertRaises(ValueError, fast_ulid.decode_timestamp, ulid[:-2])  # invalid length
 
-        self.assertRaises(OSError, fast_ulid.decode_datetime,
+        self.assertRaises(OverflowError, fast_ulid.decode_datetime,
                           '7ZZZZZZZZZZZZZZZZZZZZZZZZZ')  # Python can't handle this far future with fromtimestamp
-        self.assertRaises(ValueError, fast_ulid.decode_datetime,
+        self.assertRaises(OverflowError, fast_ulid.decode_datetime,
                           '8000000000ZZZZZZZZZZZZZZZZ')  # This far future should be rejected to prevent overflow
-        self.assertRaises(ValueError, fast_ulid.decode_time,
+        self.assertRaises(OverflowError, fast_ulid.decode_timestamp,
                           '8000000000ZZZZZZZZZZZZZZZZ')  # This far future should be rejected to prevent overflow
 
     def test_same_milli_second_increment(self):

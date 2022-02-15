@@ -129,7 +129,7 @@ char *ULID(unsigned long long time = 0) {
 double decodeTime(const char* ulid){
     if (strlen(ulid) != TIME_LEN + RANDOM_LEN) {
         char error[40];
-        sprintf(error, "Invalid length of ULID: %d", strlen(ulid));
+        sprintf(error, "Invalid length of ULID: %zd", strlen(ulid));
 
         PyErr_SetString(PyExc_ValueError, std::string(error).c_str());
         return -1;
@@ -153,10 +153,10 @@ double decodeTime(const char* ulid){
         }
     }
     if (time > MAX_TIME){
-        char error[65];
-        sprintf(error, "Invalid time in ULID: `%s`", ulid);
+        char error[100];
+        sprintf(error, "Invalid time in ULID: `%s`. timestamp must be less than 2 ^ 48", ulid);
 
-        PyErr_SetString(PyExc_ValueError, std::string(error).c_str());
+        PyErr_SetString(PyExc_OverflowError, std::string(error).c_str());
         return -1;
     }
     return (double)time * 0.001;
@@ -164,7 +164,7 @@ double decodeTime(const char* ulid){
 
 static PyObject *ulid_py(PyObject *self, PyObject *args, PyObject *kwargs) {
     PyDateTime_IMPORT;
-    static char *keywords[] = {"datetime", NULL};
+    static char *keywords[] = {"timestamp", NULL};
 
     PyObject *arg = nullptr;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O", keywords, &arg)) {
@@ -210,13 +210,17 @@ static PyObject *decode_datetime_py(PyObject *self, PyObject *args, PyObject *kw
     try {
         double timestamp = decodeTime(ulid);
         if (timestamp < 0) return NULL;
-        return PyDateTime_FromTimestamp(Py_BuildValue("(O, O)", PyFloat_FromDouble(timestamp), PyDateTime_TimeZone_UTC));
+        auto datetime = PyDateTime_FromTimestamp(Py_BuildValue("(d, O)", timestamp, PyDateTime_TimeZone_UTC));
+        if (datetime == NULL) {
+            PyErr_SetString(PyExc_OverflowError, "Timestamp is too large to create `datetime.datetime`. Please use `decode_timestamp` instead.");
+        }
+        return datetime;
     } catch (std::runtime_error &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
 }
 
-static PyObject *decode_time_py(PyObject *self, PyObject *args, PyObject *kwargs) {
+static PyObject *decode_timestamp_py(PyObject *self, PyObject *args, PyObject *kwargs) {
     static char *keywords[] = {"ulid", NULL};
 
     const char *ulid;
@@ -234,14 +238,14 @@ static PyObject *decode_time_py(PyObject *self, PyObject *args, PyObject *kwargs
     }
 }
 
-static char ulid_docs[] = "ULID(datetime: datetime.datetime | float = None)-> str: \nReturn ULID. if datetime is given, create ULID with it.\n";
-static char decode_datetime_docs[] = "decode_datetime(ulid: str)-> datetime.datetime: \nReturn timestamp of ULID in `datetime.datetime`.\nTimestamp can cause overflow, so if it's too large, please use `decode_time` instead.\n";
-static char decode_time_docs[] = "decode_time(ulid: str)-> float: \nReturn timestamp of ULID in `float`.\n";
+static char ulid_docs[] = "ulid(timestamp: datetime.datetime | float = None)-> str: \nReturn ULID. if timestamp is given, create ULID with it.\n";
+static char decode_datetime_docs[] = "decode_datetime(ulid: str)-> datetime.datetime: \nReturn timestamp of ULID in `datetime.datetime`.\nTimestamp can cause overflow, so if it's too large, please use `decode_timestamp` instead.\n";
+static char decode_timestamp_docs[] = "decode_timestamp(ulid: str)-> float: \nReturn timestamp of ULID in `float`.\n";
 
 static PyMethodDef ulid_module_methods[] = {
         {"ulid",        (PyCFunction) ulid_py,        METH_VARARGS | METH_KEYWORDS, ulid_docs},
         {"decode_datetime", (PyCFunction) decode_datetime_py, METH_VARARGS | METH_KEYWORDS, decode_datetime_docs},
-        {"decode_time", (PyCFunction) decode_time_py, METH_VARARGS | METH_KEYWORDS, decode_datetime_docs},
+        {"decode_timestamp", (PyCFunction) decode_timestamp_py, METH_VARARGS | METH_KEYWORDS, decode_timestamp_docs},
         {NULL,          NULL,                         0,                            NULL}
 };
 

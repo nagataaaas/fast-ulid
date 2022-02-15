@@ -1,20 +1,101 @@
-    """
-        without_time:  1000000 :  [0.6389987468719482, 0.6379995346069336, 0.6380014419555664, 0.6360037326812744, 0.6389968395233154, 0.6390001773834229, 0.6409993171691895, 0.6699995994567871, 0.6740071773529053, 0.7019636631011963]
-        with_time:  1000000 :   [0.9989991188049316, 0.9970014095306396, 1.019968032836914, 1.0310351848602295, 0.9959945678710938, 1.0270023345947266, 0.9809987545013428, 0.9779987335205078, 0.978003740310669, 0.9989638328552246]
-        decode:  1000000 :  [0.4770326614379883, 0.47699809074401855, 0.48396968841552734, 0.5030324459075928, 0.4849989414215088, 0.48600006103515625, 0.4929995536804199, 0.5059671401977539, 0.5280382633209229, 0.4969942569732666]
-        
-    ulid
-        without_time:  1000000 :  [29.529038429260254, 28.82799220085144, 28.77996802330017, 28.88903284072876, 28.793006896972656, 29.344991207122803, 28.844837188720703, 28.8206946849823, 28.937973499298096, 30.07699966430664]
-        withtime: none
-        decode: none
-    
-    ulid-py
-        without_time:  1000000 :  [1.0859079360961914, 1.0758538246154785, 1.0810010433197021, 1.0930023193359375, 1.083967924118042, 1.0850346088409424, 1.1069660186767578, 1.2199976444244385, 1.1850087642669678, 1.1779944896697998]
-        with_time:  1000000 :  [4.403997421264648, 4.4300010204315186, 4.673998832702637, 4.317998170852661, 4.286036252975464, 4.276965618133545, 4.297001123428345, 4.317025423049927, 4.265997886657715, 4.248009443283081]
-        decode:  1000000 :  [2.2180004119873047, 2.2099990844726562, 2.297999382019043, 2.253002405166626, 2.2199981212615967, 2.2700345516204834, 2.298966884613037, 2.2290003299713135, 2.2619988918304443, 2.271000862121582]
-        
-    python-ulid
-        without_time:  1000000 :  [1.4209997653961182, 1.5799994468688965, 1.503000259399414, 1.3880014419555664, 1.4240357875823975, 1.4399631023406982, 1.6379995346069336, 1.5570006370544434, 1.5250356197357178, 1.472963571548462]
-        with_time:  1000000 :  [1.718034267425537, 1.7079670429229736, 1.7280323505401611, 1.7169969081878662, 1.711967945098877, 1.6950323581695557, 1.7140016555786133, 1.6969683170318604, 1.7130310535430908, 1.734999179840088]
-        decode:  1000000 :  [1.0250003337860107, 1.2139992713928223, 1.07503080368042, 1.0649700164794922, 1.060030221939087, 1.0270130634307861, 1.0189907550811768, 1.0359642505645752, 1.016998291015625, 1.0460009574890137]
-    """
+<h1 align="center">
+	<br>
+	<br>
+	<img width="360" src="https://github.com/ulid/spec/blob/master/logo.png?raw=true" alt="ulid">
+	<br>
+	<br>
+	<br>
+</h1>
+
+# What is ULID?
+[ULID](https://github.com/ulid/spec) is 
+
+- URL safe
+- Lexicographically sortable
+- Monotonic sortable
+
+ULIDs have been developed to replace UUIDs.
+
+# What is fast-ulid?
+It is Really fast Python implementation of ULID.\
+Please see benchmark below.
+
+# Installation
+
+    $ pip install fast-ulid
+
+should install the package.
+
+# Usage
+
+```python
+import fast_ulid
+import time
+import datetime
+
+# ulid.ulid() to create a new ULID with current timestamp
+ulid = fast_ulid.ulid()
+
+# or, you can create one with timestamp or datetime
+# Note that the millisecond part of timestamp comes in the decimal part. 
+# In other languages, the milliseconds may be placed in the integer part.
+ulid = fast_ulid.ulid(datetime.datetime.now())
+ulid = fast_ulid.ulid(time.time())
+
+print(ulid)
+# 01FVY4F1TYP63XM1YVHBVVCBSB
+
+# and you can decode timestamp or datetime.datetime from ULID
+print(fast_ulid.decode_timestamp(ulid))
+# 1644910053.214
+print(fast_ulid.decode_datetime(ulid))
+# 2022-02-15 07:27:33.214000+00:00
+```
+
+# Benchmark
+There are some other ULID implementations, but they are not as fast as fast-ulid.
+
+I have benchmarked some functions that seem to be used frequently.\
+And here is the result.
+
+![Benchmark](assets/bench_result.png "benchmark")
+
+Tested other packages are below.
+
+- [python-ulid](https://github.com/mdomke/python-ulid) by [mdomke](https://github.com/mdomke)
+- [ulid-py](https://github.com/ahawker/ulid) by [ahawker](https://github.com/ahawker)
+
+There is also an implementation of [ulid](https://github.com/mdipierro/ulid) by [mdipierro](https://github.com/mdipierro), but it is about 20-50 times slower and does not provide functions to parse or create ulids from specific timestamps.\
+Therefore, I excluded it from the benchmark.
+
+# Why fast-ulid?
+
+Because it's fast! Other Python ULID implementations are written in Python, so they are (relatively) slow.\
+fast-ulid is written in C, so it's fast.
+
+> however, those implementations are highly tuned for performance.\
+> Considering that they were written in Python, they are surprisingly fast!
+
+Other ULID implementations provide a new Class to handle ULIDs.\
+However, the beauty of ULIDs is that they are strings! Sorting, parsing, and putting them into URLs can all be done with strings.\
+We don't need a convenient class to handle ULIDs, right?
+
+This is why we focused on the performance of fast-ulid.
+
+# Documentation
+## `fast-ulid.ulid(timestamp=None) -> str`
+- timestamp: `float` or `datetime.datetime`.
+
+Create a new ULID with the given timestamp. if not given, the current timestamp is used.
+
+## `fast-ulid.decode_timestamp(ulid) -> float`
+- ulid: `str`
+
+Parse the timestamp from the given ULID.
+
+## `fast-ulid.decode_datetime(ulid) -> datetime.datetime`
+- ulid: `str`
+
+Parse the `datetime.datetime` from the given ULID.
+If the timestamp is too big, Python can cause an overflow with `datetime.fromtimestamp`.\
+So please use try-except block to handle the `OverflowError`.

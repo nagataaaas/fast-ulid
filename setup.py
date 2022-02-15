@@ -1,16 +1,23 @@
 from setuptools import setup, Extension
 
-about = {}
-with open("fast_ulid/__about__.py") as f:
-    exec(f.read(), about)
+fast_ulid__title__ = "fast-ulid"
+fast_ulid__description__ = "Easy to use ULID generator"
+fast_ulid__url__ = "https://github.com/nagataaaas/fast-ulid"
+fast_ulid__version_info__ = ("0", "1", "0")
+fast_ulid__version__ = ".".join(fast_ulid__version_info__)
+fast_ulid__author__ = "Yamato Nagata"
+fast_ulid__author_email__ = "chickenwingswillfly@gmail.com"
+fast_ulid__maintainer__ = "Yamato Nagata"
+fast_ulid__license__ = "MIT"
+fast_ulid__copyright__ = "(c) 2022 by Yamato Nagata"
 
-setup(name=about["__title__"],
-      version=about["__version__"],
-      url=about["__url__"],
-      license=about["__license__"],
-      author=about["__author__"],
-      author_email=about["__author_email__"],
-      description=about["__description__"],
+setup(name=fast_ulid__title__,
+      version=fast_ulid__version__,
+      url=fast_ulid__url__,
+      license=fast_ulid__license__,
+      author=fast_ulid__author__,
+      author_email=fast_ulid__author_email__,
+      description=fast_ulid__description__,
       long_description=__doc__,
       long_description_content_type="text/markdown",
       platforms="any",
