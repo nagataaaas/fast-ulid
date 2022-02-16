@@ -5,3 +5,4 @@ install.py
 *.pyc
 __pycache__
 .idea
+build
