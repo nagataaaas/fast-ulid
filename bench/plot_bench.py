@@ -29,7 +29,7 @@ def load_df():
     ax = sns.barplot(x="tests", y="time[s]", hue="package", data=df)
     ax.set_xticklabels(ax.get_xticklabels(), rotation=-10)
     plt.legend(fontsize='x-large', title_fontsize='40')
-    plt.savefig('bench_result.png', dpi=300)
+    plt.savefig('bench_result.png', dpi=500)
 
 
 if __name__ == '__main__':
