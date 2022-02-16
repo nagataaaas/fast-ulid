@@ -53,7 +53,7 @@ class TestFastULID(unittest.TestCase):
 
     def test_parse_Error(self):
         ulid = fast_ulid.ulid()
-        self.assertRaises(ValueError, fast_ulid.decode_timestamp, 'a' + ulid[1:])  # invalid character
+        self.assertRaises(OverflowError, fast_ulid.decode_timestamp, 'a' + ulid[1:])  # invalid character
         self.assertRaises(ValueError, fast_ulid.decode_timestamp, ulid[:-2])  # invalid length
         self.assertRaises(ValueError, fast_ulid.decode_timestamp, ulid[:-2])  # invalid length
 
