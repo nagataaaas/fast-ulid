@@ -1,8 +1,9 @@
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-bench_result = 'bench_result.txt'
+bench_result = f'{os.path.dirname(__file__)}/bench_result.txt'
 
 
 def load_df():
