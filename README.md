@@ -62,6 +62,8 @@ And here is the result.
 
 Each Time is the average time of the 1,000,000 function calls.
 
+Each code is in the [bench](https://github.com/nagataaaas/fast-ulid/tree/main/bench) directory.
+
 ![Benchmark](assets/bench_result.png "benchmark")
 
 Tested other packages are below.
