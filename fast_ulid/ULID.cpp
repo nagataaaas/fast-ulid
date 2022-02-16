@@ -12,18 +12,15 @@
 #define ENCODING_BIT_LEN 5
 #define TIME_LEN 10
 #define RANDOM_LEN 16
-#define MAX_TIME (1ull << 48) - 1
-
-#if _MSC_VER > 0
-typedef uint32_t rand_t;
-#else
-typedef uint8_t rand_t;
-#endif
 
 std::random_device rnd;
 unsigned long long lastTime = 0;
 uint8_t *lastRandom = nullptr;
-int perSingleRandom = (sizeof(unsigned int) * 8 / 5);
+const int perSingleRandom = (sizeof(unsigned int) * 8 / 5);
+const int codepointToValue[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -1, -1, -1, -1, -1, -1, 10, 11, 12, 13,
+                                14, 15, 16, 17, -1, 18, 19, -1, 20, 21, -1, 22, 23, 24, 25, 26, -1, 27, 28,
+                                29, 30, 31, -1, -1, -1, -1, -1, -1, 10, 11, 12, 13, 14, 15, 16, 17, -1, 18, 19,
+                                -1, 20, 21, -1, 22, 23, 24, 25, 26, -1, 27, 28, 29, 30, 31};
 
 
 bool incrementRandomBytes(uint8_t *random) {
@@ -126,6 +123,15 @@ char *ULID(unsigned long long time = 0) {
     return ulid;
 }
 
+
+inline int char_index(char c) {
+    if (c < '0' || c > 'z') {
+        return -1;
+    }
+    return codepointToValue[c - '0'];
+}
+
+
 double decodeTime(const char* ulid){
     if (strlen(ulid) != TIME_LEN + RANDOM_LEN) {
         char error[40];
@@ -134,30 +140,24 @@ double decodeTime(const char* ulid){
         PyErr_SetString(PyExc_ValueError, std::string(error).c_str());
         return -1;
     }
+    if (char_index(ulid[0]) >= 8) {
+        char error[100];
+        sprintf(error, "Invalid time in ULID: `%s`. timestamp must be less than 2 ^ 48", ulid);
+
+        PyErr_SetString(PyExc_OverflowError, std::string(error).c_str());
+        return -1;
+    }
     unsigned long long time = 0;
     for (int i = 0; i < TIME_LEN; i++) {
-        bool found = false;
-        for (int j = 0; j < ENCODING_LEN; j++) {
-            if (ENCODING[j] == ulid[i]) {
-                time = (time << ENCODING_BIT_LEN) + j;
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
+        int index = char_index(ulid[i]);
+        if (index == -1) {
             char error[65];
             sprintf(error, "Invalid character `%c` in ULID: `%s`", ulid[i], ulid);
 
             PyErr_SetString(PyExc_ValueError, std::string(error).c_str());
             return -1;
         }
-    }
-    if (time > MAX_TIME){
-        char error[100];
-        sprintf(error, "Invalid time in ULID: `%s`. timestamp must be less than 2 ^ 48", ulid);
-
-        PyErr_SetString(PyExc_OverflowError, std::string(error).c_str());
-        return -1;
+        time = (time << ENCODING_BIT_LEN) + index;
     }
     return (double)time * 0.001;
 }
