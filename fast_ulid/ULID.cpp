@@ -56,11 +56,6 @@ uint8_t *random_bytes(void) {
     return bytes;
 }
 
-unsigned long long get_time_ms() {
-    using namespace std::chrono;
-    return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-}
-
 unsigned long long getTimestamp() {
     using namespace std::chrono;
     return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
@@ -132,7 +127,7 @@ inline int char_index(char c) {
 }
 
 
-double decodeTime(const char* ulid){
+double decodeTime(const char* ulid) {
     if (strlen(ulid) != TIME_LEN + RANDOM_LEN) {
         char error[40];
         sprintf(error, "Invalid length of ULID: %zd", strlen(ulid));
@@ -162,13 +157,26 @@ double decodeTime(const char* ulid){
     return (double)time * 0.001;
 }
 
-static PyObject *ulid_py(PyObject *self, PyObject *args, PyObject *kwargs) {
-    PyDateTime_IMPORT;
+
+static PyObject *ulid_py(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
     static char *keywords[] = {"timestamp", NULL};
 
     PyObject *arg = nullptr;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O", keywords, &arg)) {
-        return NULL;
+    if (nargs == 1){
+        arg = args[0];
+    } else if (kwnames) {
+        if (PyTuple_Size(kwnames) == 1) {
+            PyObject *pyArgName = PyTuple_GetItem(kwnames, 0);
+            auto argName = PyUnicode_AsUTF8(pyArgName);
+            if (strcmp(keywords[0], argName) != 0 ) {
+                PyErr_SetString(PyExc_TypeError, "Invalid keyword argument for ulid()");
+                return NULL;
+            }
+            arg = args[0];
+        } else if (PyTuple_Size(kwnames) > 1) {
+            PyErr_SetString(PyExc_TypeError, "ulid() takes at most 1 keyword argument");
+            return NULL;
+        }
     }
 
     if (arg == nullptr) {
@@ -198,14 +206,34 @@ static PyObject *ulid_py(PyObject *self, PyObject *args, PyObject *kwargs) {
     return Py_BuildValue("s", result);
 }
 
-static PyObject *decode_datetime_py(PyObject *self, PyObject *args, PyObject *kwargs) {
+static PyObject *decode_datetime_py(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
     static char *keywords[] = {"ulid", NULL};
 
     const char *ulid;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s", keywords, &ulid)) {
+    PyObject *arg = nullptr;
+    if (nargs == 1){
+        arg = args[0];
+    } else if (kwnames) {
+        if (PyTuple_Size(kwnames) == 1) {
+            PyObject *pyArgName = PyTuple_GetItem(kwnames, 0);
+            auto argName = PyUnicode_AsUTF8(pyArgName);
+            if (strcmp(keywords[0], argName) != 0 ) {
+                PyErr_SetString(PyExc_TypeError, "Invalid keyword argument for decode_datetime()");
+                return NULL;
+            }
+            PyArg_ParseTuple(*args, "s", &ulid);
+        } else if (PyTuple_Size(kwnames) > 1) {
+            PyErr_SetString(PyExc_TypeError, "decode_datetime() takes at most 1 keyword argument");
+            return NULL;
+        }
+    }
+
+    if (!PyUnicode_AsUTF8(arg)){
+        PyErr_SetString(PyExc_TypeError, "Argument must be a instance of `str`");
         return NULL;
     }
+    ulid = PyUnicode_AsUTF8(arg);
 
     try {
         double timestamp = decodeTime(ulid);
@@ -220,14 +248,34 @@ static PyObject *decode_datetime_py(PyObject *self, PyObject *args, PyObject *kw
     }
 }
 
-static PyObject *decode_timestamp_py(PyObject *self, PyObject *args, PyObject *kwargs) {
+static PyObject *decode_timestamp_py(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
     static char *keywords[] = {"ulid", NULL};
 
     const char *ulid;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s", keywords, &ulid)) {
+    PyObject *arg = nullptr;
+    if (nargs == 1){
+        arg = args[0];
+    } else if (kwnames) {
+        if (PyTuple_Size(kwnames) == 1) {
+            PyObject *pyArgName = PyTuple_GetItem(kwnames, 0);
+            auto argName = PyUnicode_AsUTF8(pyArgName);
+            if (strcmp(keywords[0], argName) != 0 ) {
+                PyErr_SetString(PyExc_TypeError, "Invalid keyword argument for decode_datetime()");
+                return NULL;
+            }
+            PyArg_ParseTuple(*args, "s", &ulid);
+        } else if (PyTuple_Size(kwnames) > 1) {
+            PyErr_SetString(PyExc_TypeError, "decode_datetime() takes at most 1 keyword argument");
+            return NULL;
+        }
+    }
+
+    if (!PyUnicode_AsUTF8(arg)){
+        PyErr_SetString(PyExc_TypeError, "Argument must be a instance of `str`");
         return NULL;
     }
+    ulid = PyUnicode_AsUTF8(arg);
 
     try {
         double timestamp = decodeTime(ulid);
@@ -243,9 +291,9 @@ static char decode_datetime_docs[] = "decode_datetime(ulid: str)-> datetime.date
 static char decode_timestamp_docs[] = "decode_timestamp(ulid: str)-> float: \nReturn timestamp of ULID in `float`.\n";
 
 static PyMethodDef ulid_module_methods[] = {
-        {"ulid",        (PyCFunction) ulid_py,        METH_VARARGS | METH_KEYWORDS, ulid_docs},
-        {"decode_datetime", (PyCFunction) decode_datetime_py, METH_VARARGS | METH_KEYWORDS, decode_datetime_docs},
-        {"decode_timestamp", (PyCFunction) decode_timestamp_py, METH_VARARGS | METH_KEYWORDS, decode_timestamp_docs},
+        {"ulid",        (PyCFunction)(void(*)(void))ulid_py,        METH_FASTCALL | METH_KEYWORDS, ulid_docs},
+        {"decode_datetime", (PyCFunction)(void(*)(void))decode_datetime_py, METH_FASTCALL | METH_KEYWORDS, decode_datetime_docs},
+        {"decode_timestamp", (PyCFunction)(void(*)(void))decode_timestamp_py, METH_FASTCALL | METH_KEYWORDS, decode_timestamp_docs},
         {NULL,          NULL,                         0,                            NULL}
 };
 
@@ -259,5 +307,6 @@ static struct PyModuleDef ulid_module_definition = {
 
 PyMODINIT_FUNC PyInit_fast_ulid(void) {
     Py_Initialize();
+    PyDateTime_IMPORT;
     return PyModule_Create(&ulid_module_definition);
 }

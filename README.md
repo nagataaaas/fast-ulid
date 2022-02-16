@@ -20,6 +20,8 @@ ULIDs have been developed to replace UUIDs.
 It is Really fast Python implementation of ULID.\
 Please see benchmark below.
 
+Supporting [Python 3.7+](https://www.python.org/downloads/).
+
 # Installation
 
     $ pip install fast-ulid
