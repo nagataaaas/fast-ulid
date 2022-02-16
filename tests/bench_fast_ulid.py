@@ -15,7 +15,7 @@ if __name__ == '__main__':
              ('create str with datetime: ', lambda: str(fast_ulid.ulid(dt))),
              ('create str with timestamp: ', lambda: str(fast_ulid.ulid(ts))),
              ('decode datetime from str: ', lambda: fast_ulid.decode_datetime(ul)),
-             ('decode timestamp from str: ', lambda: fast_ulid.decode_time(ul))]
+             ('decode timestamp from str: ', lambda: fast_ulid.decode_timestamp(ul))]
 
     for title, func in tests:
         res = []
