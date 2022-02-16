@@ -8,7 +8,7 @@ bench_result = 'bench_result.txt'
 def load_df():
     with open(bench_result, 'r') as f:
         lines = f.read()
-    results = lines.split('\n\n')[:-1]
+    results = lines.split('\n\n')
     print(results)
 
     result_list = []
