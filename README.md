@@ -20,7 +20,7 @@ ULIDs have been developed to replace UUIDs.
 It is Really fast Python implementation of ULID.\
 Please see benchmark below.
 
-Supporting [Python 3.7+](https://www.python.org/downloads/).
+Supporting [Python 3](https://www.python.org/downloads/).
 
 # Installation
 
@@ -62,17 +62,21 @@ And here is the result.
 
 Each Time is the average time of the 1,000,000 function calls.
 
-Each code is in the [bench](https://github.com/nagataaaas/fast-ulid/tree/main/bench) directory.
+Every benchmark is in the [bench](https://github.com/nagataaaas/fast-ulid/tree/main/bench) directory.
 
 ![Benchmark](assets/bench_result.png "benchmark")
 
-Tested other packages are below.
+Tested packages are below.
 
 - [python-ulid](https://github.com/mdomke/python-ulid) by [mdomke](https://github.com/mdomke)
 - [ulid-py](https://github.com/ahawker/ulid) by [ahawker](https://github.com/ahawker)
 
 There is also an implementation of [ulid](https://github.com/mdipierro/ulid) by [mdipierro](https://github.com/mdipierro), but it is about 20-50 times slower and does not provide functions to parse or create ulids from specific timestamps.\
 Therefore, I excluded it from the benchmark.
+
+> We use METH_FASTCALL for Python3.7 and above.\
+> This makes fast-ulid much faster. If you use Python3.6 or below and account of the performance, 
+> please consider to upgrade to Python3.7 or above.
 
 # Why fast-ulid?
 

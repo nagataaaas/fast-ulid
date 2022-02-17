@@ -3,7 +3,7 @@ from setuptools import setup, Extension
 fast_ulid__title__ = "fast-ulid"
 fast_ulid__description__ = "Easy to use ULID generator"
 fast_ulid__url__ = "https://github.com/nagataaaas/fast-ulid"
-fast_ulid__version_info__ = ("0", "1", "3")
+fast_ulid__version_info__ = ("0", "2", "0")
 fast_ulid__version__ = ".".join(fast_ulid__version_info__)
 fast_ulid__author__ = "Yamato Nagata"
 fast_ulid__author_email__ = "chickenwingswillfly@gmail.com"
