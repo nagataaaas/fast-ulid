@@ -215,13 +215,6 @@ static struct PyModuleDef ulid_module_definition = {
         ulid_module_methods
 };
 
-static void cleanup_module(void* module) {
-    if (lastRandom != nullptr) {
-        delete[] lastRandom;
-        lastRandom = nullptr;
-    }
-}
-
 PyMODINIT_FUNC PyInit_fast_ulid(void) {
     Py_Initialize();
     PyDateTime_IMPORT;
