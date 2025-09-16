@@ -97,6 +97,9 @@ uint8_t *getRandom(unsigned long long timestamp) {
         return lastRandom;
     }
     lastTime = timestamp;
+    if (lastRandom != nullptr) {
+        delete[] lastRandom;
+    }
     uint8_t *random = random_bytes();
     lastRandom = random;
     return random;
@@ -218,5 +221,15 @@ PyMODINIT_FUNC PyInit_fast_ulid(void) {
     #if PY_VERSION_HEX < 0x03070000
     create_utc_tz();
     #endif
-    return PyModule_Create(&ulid_module_definition);
+    PyObject* module = PyModule_Create(&ulid_module_definition);
+    if (module != nullptr) {
+        // Register cleanup function to be called when module is deallocated
+        Py_AtExit([]() { 
+            if (lastRandom != nullptr) {
+                delete[] lastRandom;
+                lastRandom = nullptr;
+            }
+        });
+    }
+    return module;
 }

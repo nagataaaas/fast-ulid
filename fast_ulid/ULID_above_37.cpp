@@ -24,7 +24,9 @@ static PyObject *ulid_py(PyObject *self, PyObject *const *args, Py_ssize_t nargs
         if (result == nullptr) {
             return NULL;
         }
-        return Py_BuildValue("s", result);
+        PyObject* pyResult = Py_BuildValue("s", result);
+        delete[] result;
+        return pyResult;
     }
 
     double timestamp;
@@ -43,7 +45,9 @@ static PyObject *ulid_py(PyObject *self, PyObject *const *args, Py_ssize_t nargs
     if (result == nullptr) {
         return NULL;
     }
-    return Py_BuildValue("s", result);
+    PyObject* pyResult = Py_BuildValue("s", result);
+    delete[] result;
+    return pyResult;
 }
 
 static PyObject *decode_datetime_py(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
