@@ -1,3 +1,7 @@
+# v0.2.1
+- Fix memory leak (Contributed by @konovenski)
+- Refactor C++ code for stability.
+
 # v0.2.0
 - Now supports Python 3.6 and below.
 

@@ -3,13 +3,13 @@ from setuptools import setup, Extension
 fast_ulid__title__ = "fast-ulid"
 fast_ulid__description__ = "Easy to use ULID generator"
 fast_ulid__url__ = "https://github.com/nagataaaas/fast-ulid"
-fast_ulid__version_info__ = ("0", "2", "0")
+fast_ulid__version_info__ = ("0", "2", "1")
 fast_ulid__version__ = ".".join(fast_ulid__version_info__)
 fast_ulid__author__ = "Yamato Nagata"
 fast_ulid__author_email__ = "chickenwingswillfly@gmail.com"
 fast_ulid__maintainer__ = "Yamato Nagata"
 fast_ulid__license__ = "MIT"
-fast_ulid__copyright__ = "(c) 2022 by Yamato Nagata"
+fast_ulid__copyright__ = "(c) 2022-2025 by Yamato Nagata"
 
 setup(name=fast_ulid__title__,
       version=fast_ulid__version__,
@@ -25,7 +25,6 @@ setup(name=fast_ulid__title__,
           "Development Status :: 4 - Beta",
           "Environment :: Other Environment",
           "Intended Audience :: Developers",
-          "License :: OSI Approved :: MIT License",
           "Operating System :: OS Independent",
           "Programming Language :: Python :: 3",
           "Programming Language :: Python",
