@@ -41,7 +41,7 @@ static PyObject *ulid_py(PyObject *self, PyObject *const *args, Py_ssize_t nargs
         return NULL;
     }
 
-    auto result = ULID(timestamp * 1000);
+    auto result = ULID(static_cast<unsigned long long>(timestamp * 1000));
     if (result == nullptr) {
         return NULL;
     }
@@ -89,6 +89,7 @@ static PyObject *decode_datetime_py(PyObject *self, PyObject *const *args, Py_ss
         return datetime;
     } catch (std::runtime_error &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
+        return NULL;
     }
 }
 
@@ -127,5 +128,6 @@ static PyObject *decode_timestamp_py(PyObject *self, PyObject *const *args, Py_s
         return Py_BuildValue("d", timestamp);
     } catch (std::runtime_error &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
+        return NULL;
     }
 }
